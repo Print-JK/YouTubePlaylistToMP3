@@ -8,7 +8,7 @@ import yt_dlp as youtube_dl
 import os
 import pandas as pd
 
-# Code by Wong Wei Jun :D
+# forked from Wong Wei Jun's YouTubeLikedToMP3 Repo
 
 app = Flask(__name__)
 
