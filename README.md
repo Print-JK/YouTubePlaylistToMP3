@@ -26,34 +26,322 @@
 
   <h2>📦 Setup Instructions</h2>
 
-  <h3>1. Clone this repo</h3>
-  <pre><code>git clone https://github.com/yourusername/youtube-mp3-downloader.git
-cd youtube-mp3-downloader</code></pre>
+## 1. Clone or Download the Project
 
-  <h3>2. Install dependencies</h3>
-  <pre><code>pip install -r requirements.txt</code></pre>
+If you are using Git:
+```
+git clone https://github.com/Print-JK/YouTubePlaylistToMP3.git
+cd YouTubePlaylistToMP3
+```
 
-  <h3>3. Add <code>client_secrets.json</code></h3>
-  <ol>
-    <li>Go to <a href="https://console.cloud.google.com/apis/credentials" target="_blank">Google Cloud Console</a></li>
-    <li>Create OAuth 2.0 credentials</li>
-    <li>Add redirect URI: <code>http://127.0.0.1:5000/redirect</code></li>
-    <li>Download the JSON, rename to <code>client_secrets.json</code>, and place in project root</li>
-  </ol>
+Or simply download the project ZIP and extract it.
 
-  <h3>4. Run the Flask app</h3>
-  <pre><code>python app.py</code></pre>
+## 2. Create a Python Virtual Environment
 
-  <p>Then open: <code>http://127.0.0.1:5000/</code></p>
+Open a terminal inside the project folder.
 
-  <h2>✅ What Happens After Login?</h2>
-  <ol>
-    <li>Fetches your liked videos</li>
-    <li>Saves to <code>Downloads/songs.csv</code></li>
-    <li>Uses <code>yt-dlp</code> to download MP3s</li>
-    <li>Saves to: <code>~/Downloads/songs/</code></li>
-  </ol>
+### Linux / macOS
+```
+python3 -m venv venv
 
+# Activate it:
+source venv/bin/activate
+```
+
+### Windows
+```
+python -m venv venv
+
+
+# Activate it:
+
+venv\Scripts\activate
+```
+
+## 3. Install Python Dependencies
+
+With the virtual environment activated:
+
+```pip install flask yt-dlp pandas google-api-python-client google-auth google-auth-oauthlib google-auth-httplib2```
+
+
+## 4. Install FFmpeg
+
+FFmpeg is required because yt-dlp downloads the audio and then converts it to MP3.
+
+### Linux / Ubuntu / Debian
+```
+sudo apt update
+sudo apt install ffmpeg
+```
+
+### Windows
+
+Install FFmpeg and make sure the ffmpeg executable is available in your system PATH.
+
+Then open a new terminal and run:
+```
+ffmpeg -version
+```
+
+If the command displays FFmpeg information, it is installed correctly.
+
+## 5. Create a Google Cloud Project
+
+Go to Google Cloud Console:
+
+https://console.cloud.google.com/
+
+Create a new project.
+
+For example:
+
+YouTube Playlist Downloader
+
+## 6. Enable the YouTube Data API
+
+Inside your Google Cloud project:
+
+Open APIs & Services
+Select Library
+Search for:
+YouTube Data API v3
+
+Open it
+Click Enable
+## 7. Configure the OAuth Consent Screen
+
+Go to:
+
+Google Cloud → APIs & Services → OAuth consent screen
+
+Configure the application.
+
+For a personal project, you can generally use:
+
+User type: External
+
+
+Fill in the required application information.
+
+You will need to provide an application name and your email information.
+
+## 8. Add Yourself as a Test User
+
+If your OAuth application is in testing mode:
+
+Open the OAuth consent screen
+Find Test users
+Click Add users
+Add the Google account that owns the YouTube playlist you want to access
+
+For example:
+
+your-email@gmail.com
+
+
+This is important. If your account isn't listed as a test user, Google may prevent authentication.
+
+## 9. Create OAuth Credentials
+
+Go to:
+
+Google Cloud → APIs & Services → Credentials
+
+Click:
+
+Create Credentials → OAuth client ID
+
+Select:
+
+Application type:
+Web application
+
+
+Give it a name, for example:
+
+YouTube Playlist Downloader
+
+## 10. Configure the Redirect URI
+
+Your Flask application uses:
+
+/redirect
+
+
+The default Flask development server runs on:
+
+http://127.0.0.1:5000
+
+
+Therefore, add this as an authorized redirect URI:
+
+http://127.0.0.1:5000/redirect
+
+
+If you use localhost instead, you can use:
+
+http://localhost:5000/redirect
+
+
+Make sure the URI in Google Cloud matches the URI used by the application.
+
+## 11. Download client_secrets.json
+
+After creating the OAuth client:
+
+Download the JSON credentials file.
+Rename it to:
+client_secrets.json
+
+Place it in the root directory of the project.
+
+Your project should look approximately like this:
+```
+YouTubePlaylistToMP3/
+│
+├── app.py
+├── client_secrets.json
+├── README.md
+│
+└── venv/
+```
+
+
+If client_secrets.json has already been uploaded to a public repository, create new OAuth credentials and revoke the old ones.
+
+## 12. Get Your YouTube Playlist ID
+
+Open the YouTube playlist you want to download.
+
+A playlist URL looks like:
+
+https://www.youtube.com/playlist?list=PLxxxxxxxxxxxxxxxx
+
+
+The playlist ID is the value after:
+
+list=
+
+
+For example:
+
+https://www.youtube.com/playlist?list=PL123456789
+
+
+The playlist ID is:
+
+PL123456789
+
+## 13. Run the Application
+
+run:
+
+```python app.py```
+
+
+You should see:
+
+============================================================
+YouTube Playlist → MP3
+============================================================
+
+Enter YouTube Playlist ID:
+
+
+Enter your playlist ID:
+
+PL123456789
+
+
+The application will then start Flask.
+
+## 14. Open the Application
+
+Open your browser and go to:
+
+http://127.0.0.1:5000
+
+
+Google will ask you to sign in.
+
+Sign in using the Google account that has access to the playlist.
+
+After authorization, the application will retrieve the playlist videos and begin downloading them.
+
+## 15. Where Are the MP3 Files?
+
+The MP3 files are saved here:
+
+Linux / macOS
+`~/Downloads/songs/`
+
+Windows
+`C:\Users\YOUR_USERNAME\Downloads\songs\`
+
+
+The application creates the songs directory automatically.
+
+## 16. Download Tracking
+
+The application creates:
+
+`~/Downloads/songs.csv`
+
+
+The CSV contains:
+
+title
+channel
+video_id
+url
+status
+error
+
+
+For example:
+
+title,channel,video_id,url,status,error
+Song A,Artist A,abc123,https://youtube.com/watch?v=abc123,Downloaded,
+Song B,Artist B,def456,https://youtube.com/watch?v=def456,Downloaded,
+Song C,Artist C,cvCFRGn7EEQ,https://youtube.com/watch?v=cvCFRGn7EEQ,Failed,"Video unavailable"
+
+
+Possible statuses are:
+
+Pending
+Downloading
+Downloaded
+Failed
+
+## 17. Failed Downloads
+
+If a video cannot be downloaded, the application will not stop the entire playlist.
+
+For example:
+
+[37/100] Some unavailable video
+❌ Failed: Some unavailable video
+   Reason: ERROR: [youtube] cvCFRGn7EEQ: Video unavailable
+
+
+The application will then continue:
+
+[38/100] Next video
+✅ Downloaded: Next video
+
+
+The failed video will be recorded in songs.csv.
+
+##  18. Updating yt-dlp
+
+YouTube changes frequently, so keeping yt-dlp updated is recommended.
+
+With the virtual environment activated:
+
+```pip install -U yt-dlp```
+
+If downloads suddenly stop working, updating yt-dlp should be one of the first troubleshooting steps.
 
   <h2>🧠 Credits</h2>
   <ul>
@@ -62,6 +350,7 @@ cd youtube-mp3-downloader</code></pre>
     <li>YouTube Data API – Liked video fetch</li>
     <li>pandas – CSV writing</li>
     <li>youtubesearchpython – Video search</li>
+    <li>Wong Wei Jun - YoutubeLikedVidsToMP3</li>
   </ul>
 
   <h2>⚠️ Legal</h2>
@@ -70,3 +359,11 @@ cd youtube-mp3-downloader</code></pre>
 
 </body>
 </html>
+
+
+
+
+
+
+
+
