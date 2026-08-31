@@ -241,7 +241,7 @@ run:
 
 
 You should see:
-
+```
 ============================================================
 YouTube Playlist → MP3
 ============================================================
@@ -253,7 +253,7 @@ Enter your playlist ID:
 
 PL123456789
 
-
+```
 The application will then start Flask.
 
 ## 14. Open the Application
