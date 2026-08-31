@@ -1,5 +1,5 @@
 
-  <h1>🎵 YouTube Liked Videos MP3 Downloader (Flask App)</h1>
+  <h1>🎵 YouTube Playlist to MP3 Downloader (Flask App)</h1>
 
   <p>This Flask app allows you to:</p>
   <ul>
@@ -12,7 +12,7 @@
   <h2>🚀 Features</h2>
   <ul>
     <li>🔐 OAuth 2.0 login with Google</li>
-    <li>📄 Exports liked videos to <code>songs.csv</code></li>
+    <li>📄 Exports playlist videos based on playlist id to <code>songs.csv</code></li>
     <li>🎧 Downloads each video as MP3</li>
     <li>📁 Files saved to <code>~/Downloads/songs/</code></li>
   </ul>
