@@ -342,6 +342,12 @@ With the virtual environment activated:
 ```pip install -U yt-dlp```
 
 If downloads suddenly stop working, updating yt-dlp should be one of the first troubleshooting steps.
+  <h2>⚠️ Limitations</h2>
+  <ul>
+    <p>It is recommended that each download session is limited to only 400-500 videos, and take around a 6-12 hrs break before starting a new download session to avoid CAPTCHAs</p>
+     </ul>
+
+
 
   <h2>🧠 Credits</h2>
   <ul>
