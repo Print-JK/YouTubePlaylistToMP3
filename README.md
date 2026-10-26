@@ -233,6 +233,8 @@ The playlist ID is:
 
 PL123456789
 
+You can paste either the full playlist link or just the playlist ID.
+
 ## 13. Run the Application
 
 run:
@@ -246,12 +248,13 @@ You should see:
 YouTube Playlist → MP3
 ============================================================
 
-Enter YouTube Playlist ID:
-
-
-Enter your playlist ID:
+Enter YouTube Playlist Link or ID:
 
 PL123456789
+
+Using playlist: PL123456789
+
+Starting Flask...
 
 ```
 The application will then start Flask.
@@ -267,7 +270,36 @@ Google will ask you to sign in.
 
 Sign in using the Google account that has access to the playlist.
 
-After authorization, the application will retrieve the playlist videos and begin downloading them.
+After authorization, the application will retrieve the playlist videos, print all titles once, and ask how you want to download:
+
+```
+Videos in playlist:
+------------------------------------------------------------
+[1] Song A - Artist A
+     https://www.youtube.com/watch?v=abc123
+[2] Song B - Artist B
+     https://www.youtube.com/watch?v=def456
+...
+------------------------------------------------------------
+
+How do you want to download?
+  all   - download the entire playlist
+  num   - download the first N videos
+  after - download the videos after a video number or video title
+>
+```
+
+Choose one of:
+
+- `all` — download every video in the playlist
+- `num` — download only the first N videos (you will be asked for N)
+- `after` — download the videos that come after a video number or video title
+
+For example, typing `num` then `2` downloads only the first 2 videos.
+
+Typing `after` then `3` downloads videos 4, 5, 6, ... to the end of the playlist.
+
+Typing `after` then `alpha` downloads every video that comes after the first video with "alpha" in its title.
 
 ## 15. Where Are the MP3 Files?
 

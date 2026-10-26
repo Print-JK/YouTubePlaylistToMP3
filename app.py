@@ -371,25 +371,26 @@ def get_tracks():
 
 
     # ========================================================
-    # PRINT WHAT WILL BE DOWNLOADED
+    # PRINT ALL VIDEO TITLES ONCE
     # ========================================================
 
-    print("Videos to download:")
+    print("Videos in playlist:")
     print("-" * 60)
 
 
-    for song in all_songs:
+    for index, song in enumerate(
+        all_songs,
+        start=1
+    ):
 
         print(
-            f"{song['title']} "
+            f"[{index}] {song['title']} "
             f"- {song['channel']}"
         )
 
         print(
-            f"  {song['url']}"
+            f"     {song['url']}"
         )
-
-        print()
 
 
     print("-" * 60)
@@ -397,11 +398,20 @@ def get_tracks():
 
 
     # ========================================================
+    # LET USER CHOOSE WHAT TO DOWNLOAD
+    # ========================================================
+
+    selected_songs = choose_songs(
+        all_songs
+    )
+
+
+    # ========================================================
     # DOWNLOAD VIDEOS
     # ========================================================
 
     successful, failed = download_from_ids(
-        all_songs,
+        selected_songs,
         csv_path
     )
 
@@ -417,6 +427,235 @@ def get_tracks():
         f"CSV saved to {csv_path}. "
         f"Check {downloads_folder / 'songs'}"
     )
+
+
+# ============================================================
+# EXTRACT PLAYLIST ID FROM A LINK
+# ============================================================
+
+def extract_playlist_id(
+    playlist_input
+):
+
+    """
+    Accept either a full YouTube playlist link
+    or a raw playlist ID.
+
+    Examples:
+
+        https://www.youtube.com/playlist?list=PL123
+        https://youtube.com/playlist?list=PL123
+        https://youtu.be/...?list=PL123
+        PL123
+
+    Returns the playlist ID, or None if not found.
+    """
+
+    import re
+
+    # If the input is already a plain playlist ID.
+    if re.fullmatch(
+        r"[A-Za-z0-9_-]{10,}",
+        playlist_input
+    ):
+
+        return playlist_input
+
+    # Otherwise, look for list=... in the link.
+    match = re.search(
+        r"[?&]list=([A-Za-z0-9_-]+)",
+        playlist_input
+    )
+
+    if match:
+
+        return match.group(1)
+
+    return None
+
+
+# ============================================================
+# CHOOSE WHICH VIDEOS TO DOWNLOAD
+# ============================================================
+
+def choose_songs(
+    all_songs
+):
+
+    """
+    Ask the user how they want to download:
+
+        all   - download every video
+        num   - download the first N videos
+        after - download the videos that come after
+                a given video number or video title
+
+    Returns the list of songs to download.
+    """
+
+    while True:
+
+        print(
+            "How do you want to download?"
+        )
+
+        print(
+            "  all   - download the entire playlist"
+        )
+
+        print(
+            "  num   - download the first N videos"
+        )
+
+        print(
+            "  after - download the videos after "
+            "a video number or video title"
+        )
+
+        choice = input(
+            "> "
+        ).strip().lower()
+
+
+        # ------------------------------------------------
+        # Download everything
+        # ------------------------------------------------
+
+        if choice == "all":
+
+            return list(
+                all_songs
+            )
+
+
+        # ------------------------------------------------
+        # Download first N videos
+        # ------------------------------------------------
+
+        if choice == "num":
+
+            try:
+
+                n = int(
+                    input(
+                        "How many videos to download? "
+                    ).strip()
+                )
+
+            except ValueError:
+
+                print()
+                print(
+                    "❌ Please enter a valid number."
+                )
+                print()
+
+                continue
+
+            if n <= 0:
+
+                print()
+                print(
+                    "❌ Number must be at least 1."
+                )
+                print()
+
+                continue
+
+            return list(
+                all_songs[:n]
+            )
+
+
+        # ------------------------------------------------
+        # Download videos after a number or title
+        # ------------------------------------------------
+
+        if choice == "after":
+
+            start = input(
+                "Enter video number or title: "
+            ).strip()
+
+            if not start:
+
+                print()
+                print(
+                    "❌ Please enter a video number or title."
+                )
+                print()
+
+                continue
+
+            # If the input is a number, use it directly.
+            if start.isdigit():
+
+                n = int(start)
+
+                if n <= 0:
+
+                    print()
+                    print(
+                        "❌ Number must be at least 1."
+                    )
+                    print()
+
+                    continue
+
+                if n >= len(all_songs):
+
+                    print()
+                    print(
+                        "❌ That number is past the end "
+                        "of the playlist."
+                    )
+                    print()
+
+                    continue
+
+                return list(
+                    all_songs[n:]
+                )
+
+            # Otherwise, find the first video whose
+            # title contains the given text.
+            start_index = None
+
+            for index, song in enumerate(
+                all_songs
+            ):
+
+                if start.lower() in song["title"].lower():
+
+                    start_index = index
+
+                    break
+
+            if start_index is None:
+
+                print()
+                print(
+                    "❌ No video matched that title."
+                )
+                print()
+
+                continue
+
+            return list(
+                all_songs[start_index + 1:]
+            )
+
+
+        # ------------------------------------------------
+        # Invalid choice
+        # ------------------------------------------------
+
+        print()
+        print(
+            "❌ Invalid choice. "
+            "Please enter 'all', 'num', or 'after'."
+        )
+        print()
 
 
 # ============================================================
@@ -716,19 +955,41 @@ if __name__ == "__main__":
 
 
     # --------------------------------------------------------
-    # Ask for playlist ID
+    # Ask for playlist link or ID
     # --------------------------------------------------------
 
-    playlist_id = input(
-        "Enter YouTube Playlist ID: "
+    playlist_input = input(
+        "Enter YouTube Playlist Link or ID: "
     ).strip()
+
+
+    if not playlist_input:
+
+        print()
+        print(
+            "❌ No playlist link or ID provided."
+        )
+        print()
+
+        exit(1)
+
+
+    # --------------------------------------------------------
+    # Extract playlist ID from the link
+    # --------------------------------------------------------
+
+    playlist_id = extract_playlist_id(
+        playlist_input
+    )
 
 
     if not playlist_id:
 
         print()
         print(
-            "❌ No playlist ID provided."
+            "❌ Could not find a playlist ID. "
+            "Paste a YouTube playlist link "
+            "or a playlist ID."
         )
         print()
 
